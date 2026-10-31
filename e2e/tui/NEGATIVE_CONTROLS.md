@@ -52,6 +52,19 @@ passes.
 | `noteSharedServerHook` is not called | `reports for a closed pane raised no notice` |
 | `goneHookWait` is 0 | `two quick reports for a closed pane raised the notice` |
 | `closeConfigNotice` is not called | `a report that reached a pane left the notice open` |
+## Timing races taken out of six tests
+
+Run on 2026-10-31 on Linux. Each test passes on the fixed build, and each control
+fails. `TestACancelledCopyStopsReadingItsSource` passed with the hash ignoring its
+context before this change, because a first run of a copy no longer hashes its
+source. It now pauses and resumes the copy, which does.
+
+| Test | Control | Failure |
+| --- | --- | --- |
+| `TestACancelledCopyStopsReadingItsSource` | `hashOpen` reads with `context.Background()` | `the daemon read 996 MB of the source in the 2 s after the copy was cancelled` |
+| `TestRestartServerFromAPaneLeavesADaemon` | The worker does not write the sessions line | `the restart log does not say the restart finished`, after the deadline |
+| `TestKittySlowClientHoldsTheGuest` | `holdForSlowSubscribers` returns at once | `the daemon held the guest for 0s of 3s` |
+| `TestNotificationTickComposesOnlyWhenTheBurnMoves` | The tick's `needsRender` holds for any message | `a tick right after the frame that drew the message composed again` |
 
 ## tuios tutor keeps out of the person's home
 
