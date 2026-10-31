@@ -52,6 +52,16 @@ passes.
 | `noteSharedServerHook` is not called | `reports for a closed pane raised no notice` |
 | `goneHookWait` is 0 | `two quick reports for a closed pane raised the notice` |
 | `closeConfigNotice` is not called | `a report that reached a pane left the notice open` |
+## A far folder's change before its watch starts
+
+`TestFilesFollowAWindowOnAHost` holds the far watch back for 1.5 s with
+`TUIOS_E2E_WATCH_START_DELAY_MS`, so the file is removed after the list shows it and
+before the watch is up. Without the hold the race failed five CI runs in three days.
+
+Run on 2026-10-31 on Linux. The fixed build passes 3 runs of 3. With no read when
+the far watch starts, the test failed with the message from CI: `a file removed on
+the far machine stayed on the list`. With `wait-dir` ignoring `after`, it failed
+with `a change between two waits was not the answer to the second`.
 
 ## tuios tutor keeps out of the person's home
 
